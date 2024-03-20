@@ -30,3 +30,11 @@ To install and run Strive locally:
 ```
 
 7. Navigate to the url posted by the frontend server in your web browser (should be http://localhost:5173/):
+
+## Demo Screenshots
+Main Homepage
+![image](https://github.com/GavinLynch04/Strive/assets/34323734/43793521-88a5-49d9-afad-f3c2b10eadb5)
+
+Search Feature
+![image](https://github.com/GavinLynch04/Strive/assets/34323734/136660d5-45f2-451d-a096-3bf7473da9ef)
+
