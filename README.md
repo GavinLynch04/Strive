@@ -1,5 +1,5 @@
 # Strive
-Welcome to Strive - a platform built for tracking daily running activities and analyzing GPX data. Inspired by the popular fitness app Strava, Strive aims to provide users with an easy way to monitor their running progress and optimize their workouts. With Strive, you can easily upload GPX files from your running watch, allowing you to explore detailed insights such as distance covered, elevation changes, pace, and more. The steps below instruct you on how to install and run Strive on your local machine.
+Welcome to Strive - a platform built for tracking daily running activities and analyzing GPX data. Strive aims to provide users with an easy way to monitor their running progress and optimize their workouts. With Strive, you can easily upload GPX files from your running watch, allowing you to explore detailed insights such as distance covered, elevation changes, pace, and more. The steps below instruct you on how to install and run Strive on your local machine.
 
 ## Getting Started
 To install and run Strive locally:
