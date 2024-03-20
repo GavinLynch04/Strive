@@ -39,7 +39,7 @@ const upload = multer({ dest: 'uploads/' });
 app.post('/upload', upload.single('file'), (req, res) => {
     const filePath = req.file.path;
 
-    gpxParse.parseGpxFromFile(filePath, (error, data) => {
+    gpxParse.parseGpxFromFile(filePath, async (error, data) => {
         if (error) {
             console.error('Error parsing GPX file:', error);
             res.status(500).send('Error parsing GPX file');
@@ -59,7 +59,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
         data.tracks.forEach(track => {
             track.segments.forEach(segment => {
                 segment.forEach(point => {
-                    coordinates.push({ lat: point.lat, lon: point.lon });
+                    coordinates.push({lat: point.lat, lon: point.lon});
                 });
             });
         });
@@ -87,6 +87,29 @@ app.post('/upload', upload.single('file'), (req, res) => {
         // Calculate total calories burned using MET formula
         const totalCalories = MET * weightKg * totalTimeInSeconds / 3600;
 
+        // Check if identical data already exists in MongoDB
+        const db = dbClient.db(dbName);
+        const collection = db.collection('gpxData');
+
+        const existingData = await collection.findOne({
+            name: data.tracks[0].name,
+            date: data.tracks[0]?.segments[0]?.[0]?.time,
+            distance: calculateDistance(data.tracks[0].segments),
+            totalTime: totalTimeInSeconds,
+            elevationChange: calculateElevationGain(data.tracks[0].segments),
+            averageHeartRate: 0 /*extractHRFromGPX(filePath)*/,
+            totalCalories: totalCalories,
+            averageCadence: averageCadence,
+            type: 'running',
+            coordinates: coordinates,
+        });
+
+        if (existingData) {
+            // Data already exists, return an error to the user
+            res.status(409).send('Data already exists in the database');
+            return;
+        }
+
         const gpxData = {
             name: data.tracks[0].name,
             date: data.tracks[0]?.segments[0]?.[0]?.time,
@@ -100,9 +123,6 @@ app.post('/upload', upload.single('file'), (req, res) => {
             coordinates: coordinates,
         };
         console.log('Parsed GPX Data:', gpxData);
-
-        const db = dbClient.db(dbName);
-        const collection = db.collection('gpxData');
 
         collection.insertOne(gpxData, (err, result) => {
             if (err) {

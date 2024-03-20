@@ -34,18 +34,22 @@ const GPXDataDisplay = ({ gpxData }) => {
     const createMaps = () => {
         console.log("Creating maps...");
         maps.forEach(map => map.remove());
-        const newMaps = filteredData.map(data => {
+        const newMaps = filteredData.map ((data, index) => {
             console.log("Creating map for:", data.name);
-            return createMap(data.coordinates, data.name, data.date);
+            return createMap(data, index);
         });
         setMaps(newMaps); // Update maps
     };
 
-    const createMap = (coordinates, name, date) => {
+    const getMapId = (data, index) => {
+        return `map-${data.name.replace(/\s+/g, '-').toLowerCase()}-${data.date}-${index}`;
+    };
+
+    const createMap = (data, index) => {
         console.log("Initializing map for:", name);
-        const mapElementId = `map-${name.replace(/\s+/g, '-').toLowerCase()}-${date}`;
-        const averageLat = coordinates.reduce((sum, coord) => sum + coord.lat, 0) / coordinates.length;
-        const averageLon = coordinates.reduce((sum, coord) => sum + coord.lon, 0) / coordinates.length;
+        const mapElementId = getMapId(data, index);
+        const averageLat = data.coordinates.reduce((sum, coord) => sum + coord.lat, 0) / data.coordinates.length;
+        const averageLon = data.coordinates.reduce((sum, coord) => sum + coord.lon, 0) / data.coordinates.length;
         const map = L.map(mapElementId, {
             center: [averageLat, averageLon], // Assuming the first coordinate is the center
             zoom: 14, // Initial zoom level
@@ -55,7 +59,7 @@ const GPXDataDisplay = ({ gpxData }) => {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        const latlngs = coordinates.map(coord => [coord.lat, coord.lon]);
+        const latlngs = data.coordinates.map(coord => [coord.lat, coord.lon]);
 
         L.polyline(latlngs, { color: 'red' }).addTo(map);
 
@@ -80,10 +84,12 @@ const GPXDataDisplay = ({ gpxData }) => {
                         <h3>{data.name}</h3>
                         <p>Distance: {(data.distance * 0.000621371).toFixed(2)} miles</p>
                         <p>Total Time: {convertTotalTimeToReadableFormat(data.totalTime)}</p>
+                        <p>Pace: {convertSecondsToPace(data.totalTime, (data.distance * 0.000621371))}</p>
                         <p>Elevation: {(data.elevationChange * 3.28084).toFixed(2)} feet</p>
                         <p>Calories: {(data.totalCalories).toFixed(2)} calories</p>
                         <p>Date: {data.date}</p>
-                        <div id={`map-${data.name.replace(/\s+/g, '-').toLowerCase()}-${data.date}`} style={{ height: '400px', width: '800px' }}></div>                    </li>
+                        <div id={getMapId(data, index)} style={{height: '400px', width: '800px'}}></div>
+                    </li>
                 ))}
             </ul>
         </div>
@@ -101,6 +107,14 @@ function convertTotalTimeToReadableFormat(totalTimeInSeconds) {
         readableTime += minutes + 'min';
     }
     return readableTime;
+}
+
+function convertSecondsToPace(totalTimeInSeconds, distanceInMiles) {
+    const totalMinutes = totalTimeInSeconds / 60;
+    const pacePerMile = totalMinutes / distanceInMiles;
+    const minutes = Math.floor(pacePerMile);
+    const seconds = Math.round((pacePerMile - minutes) * 60);
+    return `${minutes} min ${seconds} sec per mile`;
 }
 
 export default GPXDataDisplay;
