@@ -8,26 +8,25 @@ To install and run Strive locally:
 ```shell
    git clone https://github.com/GavinLynch04/Strive/
 ```
-3. Navigate to the project directory:
+2. Navigate to the project directory:
 ```shell
    cd Strive
 ```
-5. Install dependencies using npm or yarn:
+3. Install dependencies using npm or yarn:
 ```shell
    npm install
 ```
-7. In the same Strive folder, start the frontend server:
+4. In the same Strive folder, start the frontend server:
 ```shell
    npm run dev
 ```
-9. Open a new terminal window, navigate to Strive following step 2, then navigate to src:
+5. Open a new terminal window, navigate to Strive following step 2, then navigate to src:
 ```shell
    cd src
 ```
-11. Then start the backend server:
+6. Then start the backend server:
 ```shell
    node backend.js
 ```
-5. Open your web browser and visit [http://localhost:5001](http://localhost:5001) to access Strive.
 
-13. Navigate to the url posted by the frontend server in your web browser (should be http://localhost:5173/):
+7. Navigate to the url posted by the frontend server in your web browser (should be http://localhost:5173/):
