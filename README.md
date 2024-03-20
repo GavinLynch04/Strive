@@ -1,8 +1,40 @@
 # Strive
+Welcome to Strive - a platform built for tracking daily running activities and analyzing GPX data. Strive aims to provide users with an easy way to monitor their running progress and optimize their workouts. With Strive, you can easily upload GPX files from your running watch, allowing you to explore detailed insights such as distance covered, elevation changes, pace, and more. The steps below instruct you on how to install and run Strive on your local machine.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Getting Started
+To install and run Strive locally:
 
-Currently, two official plugins are available:
+1. Clone this repository to your local machine:
+```shell
+   git clone https://github.com/GavinLynch04/Strive/
+```
+2. Navigate to the project directory:
+```shell
+   cd Strive
+```
+3. Install dependencies using npm or yarn:
+```shell
+   npm install
+```
+4. In the same Strive folder, start the frontend server:
+```shell
+   npm run dev
+```
+5. Open a new terminal window, navigate to Strive following step 2, then navigate to src:
+```shell
+   cd src
+```
+6. Then start the backend server:
+```shell
+   node backend.js
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+7. Navigate to the url posted by the frontend server in your web browser (should be http://localhost:5173/):
+
+## Demo Screenshots
+### Main Homepage
+![image](https://github.com/GavinLynch04/Strive/assets/34323734/43793521-88a5-49d9-afad-f3c2b10eadb5)
+
+### Search Feature
+![image](https://github.com/GavinLynch04/Strive/assets/34323734/136660d5-45f2-451d-a096-3bf7473da9ef)
+
