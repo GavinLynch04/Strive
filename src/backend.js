@@ -5,17 +5,22 @@ import multer from "multer";
 
 import gpxParse from "gpx-parse";
 
-import { MongoClient } from "mongodb";
-import * as fs from "fs";
+import {MongoClient, ObjectId} from "mongodb";
 
 const app = express();
+import cors from "cors";
 const port = 5001;
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*'); // Allow requests from any origin
+    res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
+
+app.use(cors({
+    origin: 'http://localhost:5173', // Allow requests only from this origin
+    methods: ['GET', 'POST', 'DELETE'], // Allow specific HTTP methods
+}));
 
 let dbClient;
 
@@ -164,6 +169,24 @@ function calculateDistance(segments) {
 
     return totalDistance;
 }
+
+app.delete('/delete/:id', async (req, res) => {
+    try {
+        const db = dbClient.db(dbName);
+        const collection = db.collection('gpxData');
+        const deletedItem = await collection.findOneAndDelete({ _id: new ObjectId(req.params.id) });
+        if (deletedItem) {
+            console.log('Data deleted successfully from the database:', deletedItem.value);
+            res.status(200).send('Data deleted successfully from the database');
+        } else {
+            console.error('Data not found in the database');
+            res.status(404).send('Data not found in the database');
+        }
+    } catch (error) {
+        console.error('Error deleting data from the database:', error);
+        res.status(500).send('Error deleting data from the database');
+    }
+});
 
 function calculateElevationGain(segments) {
     let elevationGain = 0;

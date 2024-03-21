@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Strive-master.iml" filepath="$PROJECT_DIR$/.idea/Strive-master.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/strive.iml" filepath="$PROJECT_DIR$/.idea/strive.iml" />
     </modules>
   </component>
 </project>

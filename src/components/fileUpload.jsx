@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-// eslint-disable-next-line react/prop-types
+// react component to display the file upload section
 const FileUploadForm = ({ onFileUpload, onUploadSuccess }) => {
     const [selectedFile, setSelectedFile] = useState(null);
 
