@@ -129,6 +129,7 @@ const GPXDataDisplay = ({ gpxData }) => {
     );
 };
 
+// Function to convert the time to a format that is easy to read
 function convertTotalTimeToReadableFormat(totalTimeInSeconds) {
     const hours = Math.floor(totalTimeInSeconds / 3600);
     const minutes = Math.floor((totalTimeInSeconds % 3600) / 60);
@@ -142,6 +143,7 @@ function convertTotalTimeToReadableFormat(totalTimeInSeconds) {
     return readableTime;
 }
 
+// Function to calculate pace given sec and distance
 function convertSecondsToPace(totalTimeInSeconds, distanceInMiles) {
     const totalMinutes = totalTimeInSeconds / 60;
     const pacePerMile = totalMinutes / distanceInMiles;

@@ -4,10 +4,12 @@ import { useState } from 'react';
 const FileUploadForm = ({ onFileUpload, onUploadSuccess }) => {
     const [selectedFile, setSelectedFile] = useState(null);
 
+    // Handles the file change
     const handleFileChange = (e) => {
         setSelectedFile(e.target.files[0]);
     };
 
+    // Handles when the user presses submit on a file upload
     const handleSubmit = (e) => {
         e.preventDefault();
         if (selectedFile) {
@@ -21,10 +23,12 @@ const FileUploadForm = ({ onFileUpload, onUploadSuccess }) => {
                     console.error('Error uploading file:', error);
                 });
         } else {
+            // Send alert if no file is selected
             alert('Please select a file.');
         }
     };
 
+    // HTML to display upload box
     return (
         <div>
             <h1>STRIVE</h1>
