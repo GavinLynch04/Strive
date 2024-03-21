@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 
 import multer from "multer";
@@ -11,12 +10,12 @@ const app = express();
 import cors from "cors";
 const port = 5001;
 
+// Cors headers
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
-
 app.use(cors({
     origin: 'http://localhost:5173', // Allow requests only from this origin
     methods: ['GET', 'POST', 'DELETE'], // Allow specific HTTP methods
@@ -24,10 +23,11 @@ app.use(cors({
 
 let dbClient;
 
-// Replace the connection string with your MongoDB Atlas connection string
+// MongoDB Atlas connection string
 const mongoURL = 'mongodb+srv://gavinlynch04:Gavin404@cluster0.tmxz9za.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 const dbName = 'gpxData';
 
+// Function to connect ot mongo db atlas
 MongoClient.connect(mongoURL, { useUnifiedTopology: true })
     .then(client => {
         console.log('Connected to MongoDB Atlas');
@@ -51,15 +51,15 @@ app.post('/upload', upload.single('file'), (req, res) => {
             return;
         }
         // Define constants for calorie calculation
-        const MET = 4; // Metabolic equivalent for running (assuming running activity)
-        const weightKg = 70; // User's weight in kilograms (replace with actual value)
+        const MET = 4; // Metabolic equivalent for running
+        const weightKg = 70; // User's weight in kilograms (default)
 
-        // Calculate total time, total elevation change, average heart rate, total calories, and average cadence
         let totalTime = 0;
         let totalSteps = 0;
         let totalStepsSamples = 0;
         let prevTime = null;
 
+        // Extract coordinates from point data
         const coordinates = [];
         data.tracks.forEach(track => {
             track.segments.forEach(segment => {
@@ -69,6 +69,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
             });
         });
 
+        // Extract time data from points
         data.tracks.forEach(track => {
             track.segments.forEach(segment => {
                 segment.forEach(point => {
@@ -92,29 +93,9 @@ app.post('/upload', upload.single('file'), (req, res) => {
         // Calculate total calories burned using MET formula
         const totalCalories = MET * weightKg * totalTimeInSeconds / 3600;
 
-        // Check if identical data already exists in MongoDB
         const db = dbClient.db(dbName);
         const collection = db.collection('gpxData');
-
-        const existingData = await collection.findOne({
-            name: data.tracks[0].name,
-            date: data.tracks[0]?.segments[0]?.[0]?.time,
-            distance: calculateDistance(data.tracks[0].segments),
-            totalTime: totalTimeInSeconds,
-            elevationChange: calculateElevationGain(data.tracks[0].segments),
-            averageHeartRate: 0 /*extractHRFromGPX(filePath)*/,
-            totalCalories: totalCalories,
-            averageCadence: averageCadence,
-            type: 'running',
-            coordinates: coordinates,
-        });
-
-        if (existingData) {
-            // Data already exists, return an error to the user
-            res.status(409).send('Data already exists in the database');
-            return;
-        }
-
+        // Create gpxData datatype
         const gpxData = {
             name: data.tracks[0].name,
             date: data.tracks[0]?.segments[0]?.[0]?.time,
@@ -127,8 +108,10 @@ app.post('/upload', upload.single('file'), (req, res) => {
             type: 'running',
             coordinates: coordinates,
         };
+        // Print debugging statement when gpx data is parsed
         console.log('Parsed GPX Data:', gpxData);
 
+        // Insert the gpx data into Atlas, with error checks
         collection.insertOne(gpxData, (err, result) => {
             if (err) {
                 console.error('Error saving data to MongoDB:', err);
@@ -141,6 +124,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
     });
 });
 
+// Route to retrive gpx data from mongo DB atlas, with error checking
 app.get('/gpxdata', async (req, res) => {
     try {
         const db = dbClient.db(dbName);
@@ -154,6 +138,7 @@ app.get('/gpxdata', async (req, res) => {
     }
 });
 
+// Calculates distance form segment values
 function calculateDistance(segments) {
     let totalDistance = 0;
 
@@ -166,10 +151,10 @@ function calculateDistance(segments) {
             totalDistance += calculateDistanceBetweenPoints(lat1, lon1, lat2, lon2);
         }
     });
-
     return totalDistance;
 }
 
+// Route to delete a specific entity from Mongo DB given a ID_ attribute, with error checking
 app.delete('/delete/:id', async (req, res) => {
     try {
         const db = dbClient.db(dbName);
@@ -188,9 +173,9 @@ app.delete('/delete/:id', async (req, res) => {
     }
 });
 
+// Calculates elevation gain from each segment
 function calculateElevationGain(segments) {
     let elevationGain = 0;
-
     segments.forEach(segment => {
         for (let i = 1; i < segment.length; i++) {
             const elevationChange = segment[i].elevation - segment[i - 1].elevation;
@@ -199,10 +184,10 @@ function calculateElevationGain(segments) {
             }
         }
     });
-
     return elevationGain;
 }
 
+// Calculates distance given coordinates
 function calculateDistanceBetweenPoints(lat1, lon1, lat2, lon2) {
     const earthRadius = 6371000; // meters
     const dLat = toRadians(lat2 - lat1);
@@ -215,10 +200,12 @@ function calculateDistanceBetweenPoints(lat1, lon1, lat2, lon2) {
     return distance;
 }
 
+// converts degrees to radians
 function toRadians(degrees) {
     return degrees * (Math.PI / 180);
 }
 
+// Prints port
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
